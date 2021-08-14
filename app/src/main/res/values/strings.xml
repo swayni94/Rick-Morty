@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Rick &amp; Morty</string>
+
+    <string name="characters_title">Characters</string>
+    <string name="episodes_title">Episodes</string>
+    <string name="loading">Loading…</string>
+</resources>
