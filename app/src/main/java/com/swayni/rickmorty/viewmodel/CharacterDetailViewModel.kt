@@ -9,8 +9,10 @@ import com.swayni.rickmorty.model.Character
 import com.swayni.rickmorty.model.Episode
 import com.swayni.rickmorty.service.repository.Repository
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CharacterDetailViewModel(private val repository: Repository) : ViewModel() {
+class CharacterDetailViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+
 
     private var _characterInfoMutableLiveData = MutableLiveData<Character>()
     val characterInfoLiveData : LiveData<Character> get() = _characterInfoMutableLiveData

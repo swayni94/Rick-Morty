@@ -1,51 +1,52 @@
 package com.swayni.rickmorty.viewcontroller
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import com.swayni.rickmorty.RickMortyApplication
 import com.swayni.rickmorty.adapter.AllCharactersAdapter
 import com.swayni.rickmorty.databinding.ActivityCharactersBinding
 import com.swayni.rickmorty.model.Character
-import com.swayni.rickmorty.service.remote.RemoteDataSourceImpl
-import com.swayni.rickmorty.service.repository.Repository
 import com.swayni.rickmorty.viewmodel.CharacterViewModel
-import okhttp3.internal.wait
+import com.swayni.rickmorty.viewmodel.util.viewModelProvider
+import javax.inject.Inject
 
 class CharactersActivity : AppCompatActivity() , AllCharactersAdapter.CharacterListener{
-
     private var _binding : ActivityCharactersBinding? = null
     private val binding get() = _binding!!
 
-   // private val viewModel by lazy { CharacterViewModel() }
-    private lateinit var repository : Repository
-    private lateinit var viewModel : CharacterViewModel
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private fun getViewModel():CharacterViewModel{
+        return viewModelProvider(viewModelFactory)
+    }
+
     private val adapter by lazy { AllCharactersAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        RickMortyApplication().appComponent.inject(this)
         super.onCreate(savedInstanceState)
         _binding = ActivityCharactersBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.charactersRecyclerView.adapter = adapter
-        repository = Repository(RemoteDataSourceImpl())
-        viewModel = CharacterViewModel(repository)
-        viewModel.getAllCharacters()
+        getViewModel().getAllCharacters()
 
-        viewModel.allCharacterLiveData.observe(this, {
+        getViewModel().allCharacterLiveData.observe(this, {
             adapter.addAllCharacters(it)
             binding.progressBarComponent.progressBarContainer.visibility = GONE
         })
 
-        viewModel.errorString.observe(this, {
+        getViewModel().errorString.observe(this, {
             binding.progressBarComponent.progressBarContainer.visibility = GONE
             if (it != ""){
                 AlertDialog.Builder(this).setMessage(it).setPositiveButton("Repeat!"
                 ) { dialog, which ->
-                    viewModel.getAllCharacters()
+                    getViewModel().getAllCharacters()
                     binding.progressBarComponent.progressBarContainer.visibility = VISIBLE
                     dialog.dismiss()
                 }.setNegativeButton("Cancel"

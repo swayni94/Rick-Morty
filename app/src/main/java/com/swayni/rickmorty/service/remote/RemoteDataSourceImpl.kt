@@ -35,7 +35,6 @@ class RemoteDataSourceImpl : RemoteDataSource {
             val request = service.getEpisodeInfo(ids)
             ResultData.Success(request)
         }catch (e : Exception){
-            //Exception("Error when get data!")
             ResultData.Error(e)
         }
     }
